@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+perky_chess
+
+# Environment
+.vscode/
