@@ -34,3 +34,7 @@ perky_chess
 
 # Environment
 .vscode/
+
+# Don't ignore libraries
+!libraries/SFML-2.5.1-64/lib/*
+!libraries/SFML-2.5.1-64/bin/*
