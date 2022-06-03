@@ -1,6 +1,6 @@
 CXX := g++
 EXE := perky_chess
-LINK_OPTIONS := -L./libraries/SFML-2.5.1-64/lib -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
+LINK_OPTIONS := -Wl,-rpath,"./libraries/SFML-2.5.1-64/lib" -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
 COMPILE_OPTS := -I./libraries/SFML-2.5.1-64/include #-g 
 
 SOURCE_FILES := $(wildcard src/*.cpp)
