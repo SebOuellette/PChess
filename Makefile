@@ -1,7 +1,9 @@
 CXX := g++
 EXE := perky_chess
-LINK_OPTIONS := -Wl,-rpath,"./libraries/SFML-2.5.1-64/lib" -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
-COMPILE_OPTS := -I./libraries/SFML-2.5.1-64/include #-g 
+CURRENT_DIR = $(shell pwd)
+LINK_OPTIONS := -I$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib -Wl,-rpath,"$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib" -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
+COMPILE_OPTS := -I$(CURRENT_DIR)/libraries/SFML-2.5.1-64/include #-g 
+
 
 SOURCE_FILES := $(wildcard src/*.cpp)
 OBJECT_FILES := $(patsubst src/%.cpp,%.o,$(SOURCE_FILES))
@@ -15,7 +17,7 @@ $(EXE): $(OBJECT_FILES)
 	$(CXX) -c $(COMPILE_OPTS) src/$*.cpp 
 
 valgrind:
-	valgrind ./$(EXE)
+	valgrind $(CURRENT_DIR)/$(EXE)
 
 clean:
 	rm -f *.o $(EXE) vgcore.*
