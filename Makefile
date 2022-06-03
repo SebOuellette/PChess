@@ -1,7 +1,7 @@
 CXX := g++
 EXE := perky_chess
 CURRENT_DIR = $(shell pwd)
-LINK_OPTIONS := -I$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib -Wl,-rpath,"$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib" -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
+LINK_OPTIONS := -Wl,-rpath,"$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib" -L$(CURRENT_DIR)/libraries/SFML-2.5.1-64/lib -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
 COMPILE_OPTS := -I$(CURRENT_DIR)/libraries/SFML-2.5.1-64/include #-g 
 
 
