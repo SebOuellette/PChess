@@ -1,9 +1,18 @@
-#pragma once
-#include <SFML/Graphics.hpp>
+#ifndef QUEEN_HPP
+#define QUEEN_HPP
+
 #include "Piece.hpp"
 
 // Queen class
-class Queen : public Piece {
+template <typename T>
+class _Queen : public _Piece<T> {
 public:
-	Queen(bool, const short int*);
+	_Queen(bool colour, const short int* tileSize) : _Piece<T>(colour, QUEEN, tileSize) {
+		
+	}
+	// virtual std::vector<int*> getValidSquares(T* board) {
+
+	// }
 };
+
+#endif

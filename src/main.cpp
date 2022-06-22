@@ -59,7 +59,7 @@ int main() {
 					// Check if left click
 					if (event.mouseButton.button == sf::Mouse::Left) {
 						// Store the board square pointer
-						Piece* clickedPiece = board.getPiece(hoveredTile);
+						_Piece<Board>* clickedPiece = board.getPiece(hoveredTile);
 						
 						if (clickedPiece != nullptr) {
 							lastClickedPiece = hoveredTile;
@@ -82,8 +82,8 @@ int main() {
 				case sf::Event::MouseButtonReleased:
 					// Check if left release
 					if (event.mouseButton.button == sf::Mouse::Left) {
-						Piece* oldPiece = board.getPiece(lastClickedPiece);
-						Piece* newPiece = board.getPiece(hoveredTile);
+						_Piece<Board>* oldPiece = board.getPiece(lastClickedPiece);
+						_Piece<Board>* newPiece = board.getPiece(hoveredTile);
 
 						if (lastClickedPiece.x >= 0 && (newPiece == nullptr || newPiece->isPieceWhite() != oldPiece->isPieceWhite())) {
 							if (newPiece != nullptr)

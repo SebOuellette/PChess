@@ -1,5 +1,6 @@
 #include "Rook.hpp"
 
-Rook::Rook(bool isWhite, const short int * tileSize) : Piece(isWhite, pRook, tileSize) {
+// template <typename T>
+// _Rook<T>::_Rook(bool isWhite, const short int * tileSize) : _Piece<T>(isWhite, pRook, tileSize) {
 	
-}
+// }

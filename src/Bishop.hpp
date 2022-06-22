@@ -1,9 +1,15 @@
-#pragma once
-#include <SFML/Graphics.hpp>
+#ifndef BISHOP_HPP
+#define BISHOP_HPP
+
 #include "Piece.hpp"
 
 // Bishop class
-class Bishop : public Piece {
+template <typename T>
+class _Bishop : public _Piece<T> {
 public:
-	Bishop(bool, const short int*);
+	_Bishop(bool colour, const short int* tileSize) : _Piece<T>(colour, BISHOP, tileSize) {
+		
+	}
 };
+
+#endif

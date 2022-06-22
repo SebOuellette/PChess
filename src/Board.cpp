@@ -179,47 +179,52 @@ void Board::genPieces() {
 
 		// Generate pawns
 		for (int x=0;x<8;x++) {
-			this->pieces[x][y] = new Pawn(colour, &this->tileSize);
+			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize);
 			this->pieces[x][y]->setPosition(x, y);
+
+			// The issue is that template methods can't really be in a source file like normal methods,
+			// they all have to be in the header. 
 		}
+
+		
 		
 		// Set the y variable to work for the back rank pieces
 		y = colour ? 7 : 0;
 
 		// Generate Rooks
 		for (int x=0;x<8;x+=7) {
-			this->pieces[x][y] = new Rook(colour, &this->tileSize);
+			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize);
 			this->pieces[x][y]->setPosition(x, y);
 		}
 
 		// Generate Knights
 		for (int x=1;x<8;x+=5) {
-			this->pieces[x][y] = new Knight(colour, &this->tileSize);
+			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize);
 			this->pieces[x][y]->setPosition(x, y);
 		}
 
 		// Generate Bishops
 		for (int x=2;x<8;x+=3) {
-			this->pieces[x][y] = new Bishop(colour, &this->tileSize);
+			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize);
 			this->pieces[x][y]->setPosition(x, y);
 		}
 
 		// Generate Queens
-		this->pieces[3][y] = new Queen(colour, &this->tileSize);
+		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize);
 		this->pieces[3][y]->setPosition(3, y);
 
 		// Generate King
-		this->pieces[4][y] = new King(colour, &this->tileSize);
+		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize);
 		this->pieces[4][y]->setPosition(4, y);
 	}
 }
 
-void Board::drawPieces(sf::RenderWindow *window, Piece* holdingPiece) {
+void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 	// Get the current mouse position, in the coordinate space of a vertex shader
 	sf::Glsl::Vec2 mousePos = sf::Glsl::Vec2(window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
 	mousePos.y = window->getSize().y-mousePos.y;
 
-	auto drawPiece = [&](Piece* piece, int x, int y, bool isHolding) {
+	auto drawPiece = [&](_Piece<Board>* piece, int x, int y, bool isHolding) {
 		this->pieceShader.setUniform("isWhite", piece->isPieceWhite());
 		this->pieceShader.setUniform("position", sf::Glsl::Vec2(x, 7.-y));
 		this->pieceShader.setUniform("isHolding", isHolding);
@@ -232,7 +237,7 @@ void Board::drawPieces(sf::RenderWindow *window, Piece* holdingPiece) {
 		int x = i % 8;
 		int y = i / 8;
 
-		Piece* piece = this->getPiece(x, y);
+		_Piece<Board>* piece = this->getPiece(x, y);
 
 		if (piece != nullptr && holdingPiece != piece) {
 			drawPiece(piece, x, y, false);
@@ -244,24 +249,24 @@ void Board::drawPieces(sf::RenderWindow *window, Piece* holdingPiece) {
 		drawPiece(holdingPiece, holdingPiece->getPosition().x, holdingPiece->getPosition().y, true);
 }
 
-Piece* Board::getPiece(int x, int y) {
+_Piece<Board>* Board::getPiece(int x, int y) {
 	if (x < 0 || y < 0) return nullptr;
 
 	return this->pieces[x][y];
 }
 
-Piece* Board::getPiece(sf::Vector2f pos) {
+_Piece<Board>* Board::getPiece(sf::Vector2f pos) {
 	return this->getPiece(pos.x, pos.y);
 }
 
-void Board::setPiece(int x, int y, Piece * newPiece) {
+void Board::setPiece(int x, int y, _Piece<Board> * newPiece) {
 	this->pieces[x][y] = newPiece;
 
 	if (this->pieces[x][y] != nullptr)
 		this->pieces[x][y]->setPosition(x, y);
 }
 
-void Board::setPiece(sf::Vector2f pos, Piece * newPiece) {
+void Board::setPiece(sf::Vector2f pos, _Piece<Board> * newPiece) {
 	this->setPiece(pos.x, pos.y, newPiece);
 }
 

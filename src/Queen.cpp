@@ -1,5 +1,6 @@
 #include "Queen.hpp"
 
-Queen::Queen(bool isWhite, const short int * tileSize) : Piece(isWhite, pQueen, tileSize) {
+// template <typename T>
+// _Queen<T>::_Queen(bool isWhite, const short int * tileSize) : _Piece<T>(isWhite, pQueen, tileSize) {
 	
-}
+// }

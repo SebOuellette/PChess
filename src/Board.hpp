@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BOARD_HPP
+#define BOARD_HPP
 #include <iostream>
 #include <cmath>
 #include <SFML/Graphics.hpp>
@@ -12,13 +13,23 @@
 #include "Queen.hpp"
 #include "King.hpp"
 
+// class Board;
+
+// typedef  _Piece<Board> Piece;
+// typedef  _Pawn<Board> Pawn;
+// typedef  _Rook<Board> Rook;
+// typedef  _Knight<Board> Knight;
+// typedef  _Bishop<Board> Bishop;
+// typedef  _Queen<Board> Queen;
+// typedef  _King<Board> King;
+
 // Board class
 class Board {
 private:
 	const short int tileSize;
 
 	// The array of pieces on the board. The array just stores indexes
-	Piece *pieces[8][8] = {};
+	_Piece<Board> *pieces[8][8] = {};
 
 	sf::RenderTexture pieceOffsetTexture;
 	
@@ -42,14 +53,14 @@ public:
 	Board(short int, sf::Window* window);
 	~Board();
 	sf::Sprite * getBackground();
-	void drawPieces(sf::RenderWindow* window, Piece* holdingPiece);
+	void drawPieces(sf::RenderWindow* window, _Piece<Board>* holdingPiece);
 	//int tryMove(Piece* piece, short int x, short int y);
 
 	// Setters / Getters
-	Piece* getPiece(int x, int y);
-	Piece* getPiece(sf::Vector2f pos);
-	void setPiece(int x, int y, Piece* newPiece);
-	void setPiece(sf::Vector2f pos, Piece* newPiece);
+	_Piece<Board>* getPiece(int x, int y);
+	_Piece<Board>* getPiece(sf::Vector2f pos);
+	void setPiece(int x, int y, _Piece<Board>* newPiece);
+	void setPiece(sf::Vector2f pos, _Piece<Board>* newPiece);
 
 	void doFrame(
 		sf::RenderWindow* window,
@@ -60,3 +71,5 @@ public:
 		sf::Vector2f mousePos
 	);
 };
+
+#endif 
