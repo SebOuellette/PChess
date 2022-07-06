@@ -7,7 +7,7 @@ int main() {
 	settings.antialiasingLevel = 8;
 
 	sf::RenderWindow window(sf::VideoMode(600, 600), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
-	window.setFramerateLimit(1000); // Set to 1000 because it works well for the dragging audio
+	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
 
 	const short int tileSize = 600 / 8;
 	Board board(tileSize, &window);
@@ -21,7 +21,16 @@ int main() {
 	// Keep a copy of the previous mouse position to calculate the instantaneous velocity during the current frame
 	sf::Vector2f mousePos;
 
+	// Create a clock for calculating the framerate
+	sf::Clock FrameClock;
+
 	while (window.isOpen()) {
+		
+		// Calculate framerate
+		float secondsSinceLastFrame = FrameClock.getElapsedTime().asSeconds();
+		FrameClock.restart(); // Reset frame clock
+		
+		float framerate = 1. / secondsSinceLastFrame;
 
 		// Update the mouse movement stuff
 		sf::Vector2f mouseVelocity = mousePos; // Cache the old mousePosition
@@ -111,7 +120,7 @@ int main() {
 		
 
 		// Let the board do it's calculations for the frame
-		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos);
+		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		
 
 		window.clear();

@@ -68,7 +68,8 @@ public:
 		sf::Vector2f mouseVelocity,
 		sf::Vector2f hoveredTile,
 		sf::Cursor* cursor,
-		sf::Vector2f mousePos
+		sf::Vector2f mousePos,
+		float framerate
 	);
 };
 

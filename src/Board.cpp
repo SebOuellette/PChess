@@ -153,6 +153,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 	this->slideSound.setBuffer(this->slideBuffer);
 	this->slideSound.setLoop(true);
+	this->slideSound.setPitch(0);
 
 	// Load the piece sliding sound
 	if (!this->takeBuffer.loadFromFile("sounds/take.wav")) {
@@ -270,7 +271,7 @@ void Board::setPiece(sf::Vector2f pos, _Piece<Board> * newPiece) {
 	this->setPiece(pos.x, pos.y, newPiece);
 }
 
-void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf::Vector2f mouseVelocity, sf::Vector2f hoveredTile, sf::Cursor* cursor, sf::Vector2f mousePos) {
+void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf::Vector2f mouseVelocity, sf::Vector2f hoveredTile, sf::Cursor* cursor, sf::Vector2f mousePos, float framerate) {
 	// Get the speed the mouse is moving from the velocity
 	float speed = std::log(std::hypot(mouseVelocity.x, mouseVelocity.y) + 1) / 20.;
 
@@ -279,7 +280,7 @@ void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf:
 	if (lastClickedPiece.x >= 0) {
 		this->slideSound.setVolume(100);
 
-		this->slideSound.setPitch(speed);
+		this->slideSound.setPitch(this->slideSound.getPitch() + (speed*framerate/1000. - this->slideSound.getPitch()) / (framerate/24.f));
 	}
 
 	// Set the mouse cursor
