@@ -1,3 +1,6 @@
+// The issue is that template methods can't really be in a source file like normal methods,
+// they all have to be in the header. 
+
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
@@ -19,16 +22,25 @@ template <typename T>
 class _Piece {
 private:
 	const short int * tileSize;
+	bool hasMoved = false;
 	bool isWhite = true;
 	PieceID pieceID;
 	sf::Texture texture;
 	sf::Sprite sprite;
 
+	void setPositionBackend(int x, int y) {
+		this->sprite.setPosition(sf::Vector2f(*this->tileSize * x, *this->tileSize * y));
+		this->pos[0] = x;
+		this->pos[1] = y;
+	}
+
 protected:
-	short int pos[2];
+	short int pos[2] = {0, 0};
 
 public:
-	_Piece(bool isWhite, PieceID pieceID, const short int * tileSize) : tileSize(tileSize) {
+	_Piece(bool isWhite, PieceID pieceID, const short int * tileSize, short int startx = 0, short int starty = 0) : tileSize(tileSize) {
+		setPositionBackend(startx, starty);
+
 		this->isWhite = isWhite;
 		this->pieceID = pieceID;
 		
@@ -64,9 +76,15 @@ public:
 	}
 	
 	void setPosition(short int x, short int y) {
-		this->sprite.setPosition(sf::Vector2f(*this->tileSize * x, *this->tileSize * y));
-		this->pos[0] = x;
-		this->pos[1] = y;
+		if (this->pos[0] == x && this->pos[1] == y)
+			return; // No need to do anything
+
+		if (0 > x || 0 > y || 7 < x || 7 < y)
+			throw "moved piece out of bounds"; // Out of bounds
+
+		this->hasMoved = true;
+
+		setPositionBackend(x, y);
 	}
 
 	void setPosition(sf::Vector2i newPos) {
@@ -84,12 +102,16 @@ public:
 		return this->pieceID;
 	}
 
+	bool hasPieceMoved() {
+		return this->hasMoved;
+	}
+
 	bool isPieceWhite() {
 		return this->isWhite;
 	}
 
-	virtual std::vector<int*> getValidSquares(T * board) {
-		return std::vector<int*>{};
+	virtual std::vector<sf::Vector2i> getValidSquares(T * board) {
+		return std::vector<sf::Vector2i>{};
 	}
 };
 

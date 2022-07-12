@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include "Board.hpp"
+#include <SFML/System/Vector2.hpp>
 #include <cmath>
+#include <cstddef>
+#include <string>
 
 int main() {
 	sf::ContextSettings settings;
@@ -23,6 +26,8 @@ int main() {
 
 	// Create a clock for calculating the framerate
 	sf::Clock FrameClock;
+
+	std::string gameMovementsLog = "";
 
 	while (window.isOpen()) {
 		
@@ -69,8 +74,16 @@ int main() {
 					if (event.mouseButton.button == sf::Mouse::Left) {
 						// Store the board square pointer
 						_Piece<Board>* clickedPiece = board.getPiece(hoveredTile);
-						
+
 						if (clickedPiece != nullptr) {
+// START OF DEBUG PRINT STUFF
+							// sf::Vector2f hoveredTileDebug = hoveredTile;
+							// hoveredTileDebug.y += 1;
+							// _Piece<Board>* clickedPieceDebug = board.getPiece(hoveredTileDebug);
+							// std::cout << "KQBNRF"[clickedPieceDebug->getType()] << std::endl;
+							std::cout << clickedPiece->getValidSquares(&board).size() << " available spaces to move to" << std::endl;
+// END OF DEBUG PRINT STUFF
+
 							lastClickedPiece = hoveredTile;
 
 							// Set the cursor to drag around the piece
@@ -94,15 +107,52 @@ int main() {
 						_Piece<Board>* oldPiece = board.getPiece(lastClickedPiece);
 						_Piece<Board>* newPiece = board.getPiece(hoveredTile);
 
-						if (lastClickedPiece.x >= 0 && (newPiece == nullptr || newPiece->isPieceWhite() != oldPiece->isPieceWhite())) {
-							if (newPiece != nullptr)
+						// Get the valid squares for the held piece
+						bool movingToValid = false;
+						if (oldPiece != nullptr) {
+							std::vector<sf::Vector2i> validSquares = oldPiece->getValidSquares(&board);
+							
+							// Loop through all valid positions, check if they equal the hovered position
+							for (sf::Vector2i validPos : validSquares) {
+								if (validPos.x == (int)hoveredTile.x && validPos.y == (int)hoveredTile.y)
+									movingToValid = true;
+							}
+						}
+
+						if (lastClickedPiece.x >= 0 && (newPiece == nullptr || newPiece->isPieceWhite() != oldPiece->isPieceWhite()) && movingToValid) {
+
+							//gameMovementsLog += '/';
+							
+							// Print piece letter
+							//gameMovementsLog += "KQBNRF"[oldPiece->getType()];
+							// Print location
+							// Rank
+							//gameMovementsLog += "abcdefgh"[(int)(lastClickedPiece.x)];
+							// Row
+							//gameMovementsLog += std::to_string(8 - (int)(lastClickedPiece.y));
+
+							if (newPiece != nullptr) {
 								// Takes pleace, play sound
 								board.takeSound.play();
 
+								// if took, print
+								//gameMovementsLog += 'x';
+							}
+
+							
 							board.setPiece(hoveredTile, oldPiece);
 
 							// Clear the reference to this piece from the old position
 							board.setPiece(lastClickedPiece, nullptr);
+
+							// Print location
+							// Rank
+							//gameMovementsLog += "abcdefgh"[(int)(hoveredTile.x+0.2)];
+							// Row
+							//gameMovementsLog += std::to_string(8 - (int)(hoveredTile.y+0.2));
+
+							//std::cout << gameMovementsLog << std::endl;
+
 						}
 
 						// Reset, no longer holding piece

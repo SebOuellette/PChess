@@ -1,4 +1,5 @@
 #include "Board.hpp"
+#include <functional>
 
 
 Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
@@ -180,43 +181,32 @@ void Board::genPieces() {
 
 		// Generate pawns
 		for (int x=0;x<8;x++) {
-			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize);
-			this->pieces[x][y]->setPosition(x, y);
-
-			// The issue is that template methods can't really be in a source file like normal methods,
-			// they all have to be in the header. 
+			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize, x, y);
 		}
-
-		
 		
 		// Set the y variable to work for the back rank pieces
 		y = colour ? 7 : 0;
 
 		// Generate Rooks
 		for (int x=0;x<8;x+=7) {
-			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize);
-			this->pieces[x][y]->setPosition(x, y);
+			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize, x, y);
 		}
 
 		// Generate Knights
 		for (int x=1;x<8;x+=5) {
-			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize);
-			this->pieces[x][y]->setPosition(x, y);
+			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize, x, y);
 		}
 
 		// Generate Bishops
 		for (int x=2;x<8;x+=3) {
-			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize);
-			this->pieces[x][y]->setPosition(x, y);
+			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize, x, y);
 		}
 
 		// Generate Queens
-		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize);
-		this->pieces[3][y]->setPosition(3, y);
+		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize, 3, y);
 
 		// Generate King
-		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize);
-		this->pieces[4][y]->setPosition(4, y);
+		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize, 4, y);
 	}
 }
 
