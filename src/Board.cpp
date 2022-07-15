@@ -241,7 +241,7 @@ void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 }
 
 _Piece<Board>* Board::getPiece(int x, int y) {
-	if (x < 0 || y < 0) return nullptr;
+	if (x < 0 || y < 0 || x > 7 || y > 7) return nullptr;
 
 	return this->pieces[x][y];
 }
@@ -270,7 +270,7 @@ void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf:
 	if (lastClickedPiece.x >= 0) {
 		this->slideSound.setVolume(100);
 
-		this->slideSound.setPitch(this->slideSound.getPitch() + (speed*framerate/1000. - this->slideSound.getPitch()) / (framerate/24.f));
+		this->slideSound.setPitch(this->slideSound.getPitch() + (speed*framerate/AUDIO_SLIDE_PITCH - this->slideSound.getPitch()) / (framerate/30.f));
 	}
 
 	// Set the mouse cursor

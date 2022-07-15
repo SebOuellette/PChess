@@ -13,6 +13,8 @@
 #include "Queen.hpp"
 #include "King.hpp"
 
+#define AUDIO_SLIDE_PITCH 200.f
+
 // class Board;
 
 // typedef  _Piece<Board> Piece;
