@@ -166,14 +166,12 @@ int main() {
 					break;
 			} 
 		}
-
 		
-
 		// Let the board do it's calculations for the frame
+		window.clear();
+		
 		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		
-
-		window.clear();
 		window.draw(*board.getBackground());
 		board.drawPieces(&window, board.getPiece(lastClickedPiece));
 		window.display();
