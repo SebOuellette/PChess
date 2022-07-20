@@ -1,18 +1,21 @@
 #include <SFML/Graphics.hpp>
 #include "Board.hpp"
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 #include <cmath>
 #include <cstddef>
 #include <string>
 
 int main() {
 	sf::ContextSettings settings;
-	settings.antialiasingLevel = 8;
+	//settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window(sf::VideoMode(600, 600), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
-	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
+	sf::RenderWindow window(sf::VideoMode(600, 600), "Perky Chess", sf::Style::Default, settings);
+	//window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
 
-	const short int tileSize = 600 / 8;
+	int boardSizeInPixels = 600;
+
+	const short int tileSize = boardSizeInPixels / 8;
 	Board board(tileSize, &window);
 	sf::Cursor cursor;
 
@@ -161,6 +164,10 @@ int main() {
 
 						board.slideSound.stop();
 					}
+					break;
+				case sf::Event::Resized:
+					//std::cout << "New Dimensions: " << event.size.width  << "x" << event.size.height << std::endl;
+					board.setBackgroundScale(sf::Vector2f((float)tileSize*8/event.size.width, (float)tileSize*8/event.size.height));
 					break;
 				default:
 					break;

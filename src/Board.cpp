@@ -4,7 +4,7 @@
 
 Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 	// Generate a texture
-	if (!this->backgroundTexture.create(600,600)) {
+	if (!this->backgroundTexture.create(tileSize*8, tileSize*8)) {
 		std::cout << "Error generating background texture" << std::endl;
 	}
 
@@ -27,7 +27,6 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 	
 	sf::Sprite sprite(this->backgroundTexture.getTexture());
 	this->background = sprite;
-
 	// Generate the pieces
 	this->genPieces();
 
@@ -70,6 +69,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 	std::string fragText = 
 	"uniform bool isWhite;"
 	"uniform sampler2D texture;"
+	
 	"uniform vec2 position;"
 	"uniform vec2 mousePos;"
 	"uniform vec2 resolution;"
@@ -110,7 +110,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 	std::string offsetTextureShader = 
 	"uniform vec2 mousePos;"
-	"uniform sampler2D texture;"
+	// "uniform sampler2D texture;"
 	"uniform vec2 texResolution;"
 	"uniform vec2 windowResolution;"
 	"uniform vec2 mouseVelocity;"
@@ -259,6 +259,10 @@ void Board::setPiece(int x, int y, _Piece<Board> * newPiece) {
 
 void Board::setPiece(sf::Vector2f pos, _Piece<Board> * newPiece) {
 	this->setPiece(pos.x, pos.y, newPiece);
+}
+
+void Board::setBackgroundScale(sf::Vector2f scale) {
+	this->background.setScale(scale);
 }
 
 void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf::Vector2f mouseVelocity, sf::Vector2f hoveredTile, sf::Cursor* cursor, sf::Vector2f mousePos, float framerate) {

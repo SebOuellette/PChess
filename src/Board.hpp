@@ -54,15 +54,16 @@ public:
 
 	Board(short int, sf::Window* window);
 	~Board();
-	sf::Sprite * getBackground();
 	void drawPieces(sf::RenderWindow* window, _Piece<Board>* holdingPiece);
 	//int tryMove(Piece* piece, short int x, short int y);
 
 	// Setters / Getters
 	_Piece<Board>* getPiece(int x, int y);
 	_Piece<Board>* getPiece(sf::Vector2f pos);
+	sf::Sprite * getBackground();
 	void setPiece(int x, int y, _Piece<Board>* newPiece);
 	void setPiece(sf::Vector2f pos, _Piece<Board>* newPiece);
+	void setBackgroundScale(sf::Vector2f scale);
 
 	void doFrame(
 		sf::RenderWindow* window,
