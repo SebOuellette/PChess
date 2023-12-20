@@ -23,6 +23,7 @@ int main() {
 
 	
 	// Keep a copy of the previous mouse position to calculate the instantaneous velocity during the current frame
+	sf::Vector2f boardMousePos;
 	sf::Vector2f mousePos;
 
 	// Create a clock for calculating the framerate
@@ -39,10 +40,11 @@ int main() {
 		float framerate = 1. / secondsSinceLastFrame;
 
 		// Update the mouse movement stuff
-		sf::Vector2f mouseVelocity = mousePos; // Cache the old mousePosition
+		sf::Vector2f mouseVelocity = boardMousePos; // Cache the old mousePosition
 
 		// Get the mouse position
-		mousePos = board.mapWindowPixelToBoard(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+		mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		boardMousePos = board.mapWindowPixelToBoard(mousePos);
 
 		// Constrain the mouse pos to the board
 		auto constrain = [](int n, int s){
@@ -56,20 +58,18 @@ int main() {
 
 			return r;
 		};
+		boardMousePos.x = constrain(boardMousePos.x, board.getSize().x);
+		boardMousePos.y = constrain(boardMousePos.y, board.getSize().y);
 
-		mousePos.x = constrain(mousePos.x, board.getSize().x);
-		mousePos.y = constrain(mousePos.y, board.getSize().y);
-
-		
-		sf::Glsl::Vec2 shaderMousePos = sf::Glsl::Vec2(board.mapShaderCoord(mousePos));//sf::Glsl::Vec2(mousePos.x, window.getSize().y - mousePos.y);
+		sf::Glsl::Vec2 shaderMousePos = sf::Glsl::Vec2(board.mapShaderCoord(boardMousePos));//sf::Glsl::Vec2(mousePos.x, window.getSize().y - mousePos.y);
 
 		// Finish the calculation
-		mouseVelocity = mousePos - mouseVelocity; // new Mouse pos - old mouse pos = vector from old mouse pos to new mouse pos
+		mouseVelocity = boardMousePos - mouseVelocity; // new Mouse pos - old mouse pos = vector from old mouse pos to new mouse pos
 
 		board.pieceShader.setUniform("mousePos", shaderMousePos);
 
 		// Get the current hovered tile
-		sf::Vector2f hoveredTile = sf::Vector2f(floor(mousePos.x / tileSize), floor(mousePos.y / tileSize));
+		sf::Vector2f hoveredTile = sf::Vector2f(floor(boardMousePos.x / tileSize), floor(boardMousePos.y / tileSize));
 
 		// If I'm holding a piece, set the hovered tile to the center of the chess piece instead of the mouse
 		// if (lastClickedPiece.x >= 0) {
@@ -105,9 +105,7 @@ int main() {
 		}
 		
 		// Let the board do it's calculations for the frame
-		window.clear();
-
-		//std::cout << lastClickedPosition.x / tileSize << " " << lastClickedPosition.y / tileSize << " | " << shaderMousePos.x / tileSize << " " << shaderMousePos.y / tileSize << std::endl; 
+		window.clear(sf::Color(0, 0, 0, 255));
 		
 		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		

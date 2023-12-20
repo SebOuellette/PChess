@@ -1,7 +1,6 @@
 #include "Board.hpp"
 #include <functional>
 
-
 Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 	// Set the size of the board
@@ -187,7 +186,7 @@ void Board::genPieces() {
 
 		// Generate pawns
 		for (int x=0;x<8;x++) {
-			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize, boardPos, x, y);
+			this->pieces[x][y] = new Pawn<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 		
 		// Set the y variable to work for the back rank pieces
@@ -195,33 +194,33 @@ void Board::genPieces() {
 
 		// Generate Rooks
 		for (int x=0;x<8;x+=7) {
-			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize, boardPos, x, y);
+			this->pieces[x][y] = new Rook<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Knights
 		for (int x=1;x<8;x+=5) {
-			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize, boardPos, x, y);
+			this->pieces[x][y] = new Knight<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Bishops
 		for (int x=2;x<8;x+=3) {
-			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize, boardPos, x, y);
+			this->pieces[x][y] = new Bishop<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Queens
-		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize, boardPos, 3, y);
+		this->pieces[3][y] = new Queen<Board>(colour, &this->tileSize, boardPos, 3, y);
 
 		// Generate King
-		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize, boardPos, 4, y);
+		this->pieces[4][y] = new King<Board>(colour, &this->tileSize, boardPos, 4, y);
 	}
 }
 
-void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
+void Board::drawPieces(sf::RenderWindow *window, Piece<Board>* holdingPiece) {
 	// Get the current mouse position, in the coordinate space of a vertex shader
 	//sf::Glsl::Vec2 mousePos = sf::Glsl::Vec2(window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
 	//mousePos.y = this->getSize().y - mousePos.y - this->getBackground()->getPosition().y;
 
-	auto drawPiece = [&](_Piece<Board>* piece, int x, int y, bool isHolding) {
+	auto drawPiece = [&](Piece<Board>* piece, int x, int y, bool isHolding) {
 		this->pieceShader.setUniform("isWhite", piece->isPieceWhite());
 		this->pieceShader.setUniform("position", sf::Glsl::Vec2(x, 7.-y));
 		this->pieceShader.setUniform("isHolding", isHolding);
@@ -238,7 +237,7 @@ void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 		int x = i % 8;
 		int y = i / 8;
 
-		_Piece<Board>* piece = this->getPiece(x, y);
+		Piece<Board>* piece = this->getPiece(x, y);
 
 		if (piece != nullptr && holdingPiece != piece) {
 			drawPiece(piece, x, y, false);
@@ -250,24 +249,24 @@ void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 		drawPiece(holdingPiece, holdingPiece->getPosition().x, holdingPiece->getPosition().y, true);
 }
 
-_Piece<Board>* Board::getPiece(int x, int y) {
+Piece<Board>* Board::getPiece(int x, int y) {
 	if (x < 0 || y < 0 || x > 7 || y > 7) return nullptr;
 
 	return this->pieces[x][y];
 }
 
-_Piece<Board>* Board::getPiece(sf::Vector2f pos) {
+Piece<Board>* Board::getPiece(sf::Vector2f pos) {
 	return this->getPiece(pos.x, pos.y);
 }
 
-void Board::setPiece(int x, int y, _Piece<Board> * newPiece) {
+void Board::setPiece(int x, int y, Piece<Board> * newPiece) {
 	this->pieces[x][y] = newPiece;
 
 	if (this->pieces[x][y] != nullptr)
 		this->pieces[x][y]->setPosition(x, y);
 }
 
-void Board::setPiece(sf::Vector2f pos, _Piece<Board> * newPiece) {
+void Board::setPiece(sf::Vector2f pos, Piece<Board> * newPiece) {
 	this->setPiece(pos.x, pos.y, newPiece);
 }
 
@@ -340,7 +339,7 @@ void Board::setPosition(sf::Vector2f newPos) {
 		int x = i % 8;
 		int y = i / 8;
 
-		_Piece<Board>* piece = this->getPiece(x, y);
+		Piece<Board>* piece = this->getPiece(x, y);
 
 		if (piece != nullptr) {
 			piece->updateBoardPos(newPos);
@@ -382,13 +381,13 @@ void Board::mousePressEvent(sf::Event event, sf::Vector2f &lastClickedPiece, sf:
 	// Check if left click
 	if (event.mouseButton.button == sf::Mouse::Left) {
 		// Store the board square pointer
-		_Piece<Board>* clickedPiece = this->getPiece(hoveredTile);
+		Piece<Board>* clickedPiece = this->getPiece(hoveredTile);
 
 		if (clickedPiece != nullptr) {
 // START OF DEBUG PRINT STUFF
 			// sf::Vector2f hoveredTileDebug = hoveredTile;
 			// hoveredTileDebug.y += 1;
-			// _Piece<Board>* clickedPieceDebug = board.getPiece(hoveredTileDebug);
+			// Piece<Board>* clickedPieceDebug = board.getPiece(hoveredTileDebug);
 			// std::cout << "KQBNRF"[clickedPieceDebug->getType()] << std::endl;
 			std::cout << clickedPiece->getValidSquares(this).size() << " available spaces to move to" << std::endl;
 // END OF DEBUG PRINT STUFF
@@ -413,8 +412,8 @@ void Board::mousePressEvent(sf::Event event, sf::Vector2f &lastClickedPiece, sf:
 void Board::mouseReleaseEvent(sf::Event event, sf::Vector2f& hoveredTile, sf::Vector2f& lastClickedPiece) {
 	// Check if left release
 	if (event.mouseButton.button == sf::Mouse::Left) {
-		_Piece<Board>* oldPiece = this->getPiece(lastClickedPiece);
-		_Piece<Board>* newPiece = this->getPiece(hoveredTile);
+		Piece<Board>* oldPiece = this->getPiece(lastClickedPiece);
+		Piece<Board>* newPiece = this->getPiece(hoveredTile);
 
 		// Get the valid squares for the held piece
 		bool movingToValid = false;

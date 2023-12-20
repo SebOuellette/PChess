@@ -32,7 +32,7 @@ private:
 	const short int tileSize;
 
 	// The array of pieces on the board. The array just stores indexes
-	_Piece<Board> *pieces[8][8] = {};
+	Piece<Board> *pieces[8][8] = {};
 
 	sf::RenderTexture pieceOffsetTexture;
 	
@@ -60,14 +60,14 @@ public:
 	Board(short int, sf::Window* window);
 	~Board();
 	sf::Sprite * getBackground();
-	void drawPieces(sf::RenderWindow* window, _Piece<Board>* holdingPiece);
+	void drawPieces(sf::RenderWindow* window, Piece<Board>* holdingPiece);
 	//int tryMove(Piece* piece, short int x, short int y);
 
 	// Setters / Getters
-	_Piece<Board>* getPiece(int x, int y);
-	_Piece<Board>* getPiece(sf::Vector2f pos);
-	void setPiece(int x, int y, _Piece<Board>* newPiece);
-	void setPiece(sf::Vector2f pos, _Piece<Board>* newPiece);
+	Piece<Board>* getPiece(int x, int y);
+	Piece<Board>* getPiece(sf::Vector2f pos);
+	void setPiece(int x, int y, Piece<Board>* newPiece);
+	void setPiece(sf::Vector2f pos, Piece<Board>* newPiece);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f newPos);
 	sf::Vector2i getSize();

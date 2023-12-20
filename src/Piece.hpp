@@ -19,7 +19,7 @@ enum PieceID {
 
 // Piece parent class
 template <typename T>
-class _Piece {
+class Piece {
 private:
 	const short int * tileSize;
 	bool hasMoved = false;
@@ -39,7 +39,7 @@ protected:
 	short int pos[2] = {0, 0};
 
 public:
-	_Piece(bool isWhite, PieceID pieceID, const short int * tileSize, sf::Vector2f boardPos, short int startx = 0, short int starty = 0) : tileSize(tileSize) {
+	Piece(bool isWhite, PieceID pieceID, const short int * tileSize, sf::Vector2f boardPos, short int startx = 0, short int starty = 0) : tileSize(tileSize) {
 		// First, store the board pos so the next function call will have access to it
 		this->_boardPos = boardPos;
 
@@ -63,7 +63,7 @@ public:
 		this->sprite.setScale(*tileSize / this->sprite.getLocalBounds().width, *tileSize / this->sprite.getLocalBounds().height);
 	}
 
-	_Piece() {
+	Piece() {
 		this->isWhite = true;
 	}
 
