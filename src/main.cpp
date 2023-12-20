@@ -9,7 +9,7 @@ int main() {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window(sf::VideoMode(800, 800), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
+	sf::RenderWindow window(sf::VideoMode(900, 800), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
 	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
 
 	const short int tileSize = 600 / 8;
@@ -63,7 +63,7 @@ int main() {
 
 		//std::cout << hoveredTile.x << " " << hoveredTile.y << std::endl;;
 
-		std::cout << (shaderMousePos.x - lastClickedPosition.x) * 2 / board.getSize().x / 0.25 << " " << (shaderMousePos.y - lastClickedPosition.y) * 2 / board.getSize().y  / 0.25 << std::endl;
+		//std::cout << (shaderMousePos.x - lastClickedPosition.x) * 2 / board.getSize().x / 0.25 << " " << (shaderMousePos.y - lastClickedPosition.y) * 2 / board.getSize().y  / 0.25 << std::endl;
 
 		
 
@@ -175,7 +175,7 @@ int main() {
 		// Let the board do it's calculations for the frame
 		window.clear();
 
-		std::cout << lastClickedPosition.x / tileSize << " " << lastClickedPosition.y / tileSize << " | " << shaderMousePos.x / tileSize << " " << shaderMousePos.y / tileSize << std::endl; 
+		//std::cout << lastClickedPosition.x / tileSize << " " << lastClickedPosition.y / tileSize << " | " << shaderMousePos.x / tileSize << " " << shaderMousePos.y / tileSize << std::endl; 
 		
 		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		

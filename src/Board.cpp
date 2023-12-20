@@ -45,7 +45,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 	"uniform vec2 lastClickedPos;"
 
 	"uniform vec2 texResolution;"
-	"uniform vec2 windowResolution;"
+	"uniform vec2 boardWindowDiff;"
 	"uniform vec2 mouseVelocity;"
 
 	"void main() {"
@@ -57,7 +57,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 		// Draw the item that we are holding
 		"vec2 localLastClicked = fract(lastClickedPos / resolution * 8.);"
 		"if (isHolding) {"
-			"gl_Position.xy += (mousePos - lastClickedPos) * 2. / resolution;" // mousePos / resolution * 2. - position * unit - localLastClicked * unit;"
+			"gl_Position.xy += ((mousePos - lastClickedPos) * 2. / resolution) * boardWindowDiff;" // mousePos / resolution * 2. - position * unit - localLastClicked * unit;"
 		"}"
 
 		// If we are holding some item but this is not the item we are holding
@@ -116,13 +116,13 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 	"uniform vec2 mousePos;"
 	"uniform sampler2D texture;"
 	"uniform vec2 texResolution;"
-	"uniform vec2 windowResolution;"
+	"uniform vec2 boardResolution;"
 	"uniform vec2 mouseVelocity;"
 	
 	"void main() {"
 		"vec2 uv = gl_FragCoord.xy / texResolution;"
 		"uv += uv / 16.;"
-		"vec2 mouseLocal = mousePos / windowResolution + uv / 16.;"
+		"vec2 mouseLocal = mousePos / boardResolution + uv / 16.;"
 
 		"vec2 offsetDir = normalize(uv - mouseLocal);"
 
@@ -146,7 +146,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 	this->pieceOffsetShader.setUniform("texture", sf::Shader::CurrentTexture);
 	this->pieceOffsetShader.setUniform("texResolution", sf::Glsl::Vec2(pieceOffsetTexture.getSize()));
-	this->pieceOffsetShader.setUniform("windowResolution", sf::Glsl::Vec2(this->getSize()));
+	this->pieceOffsetShader.setUniform("boardResolution", sf::Glsl::Vec2(this->getSize()));
 	
 
 	// Loading sounds
@@ -226,6 +226,10 @@ void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 		this->pieceShader.setUniform("position", sf::Glsl::Vec2(x, 7.-y));
 		this->pieceShader.setUniform("isHolding", isHolding);
 		this->pieceShader.setUniform("pieceOffset", this->pieceOffsetTexture.getTexture());
+
+		sf::Vector2f diff = sf::Vector2f((float)this->getSize().x / (float)window->getSize().x, (float)this->getSize().y / (float)window->getSize().y);
+		
+		this->pieceShader.setUniform("boardWindowDiff", sf::Glsl::Vec2(diff));
 
 		(*window).draw(*piece->getSprite(), &this->pieceShader);
 	};
