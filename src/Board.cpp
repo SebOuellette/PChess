@@ -377,3 +377,97 @@ sf::Vector2f Board::mapWindowPixelToBoard(sf::Vector2f windowPos) {
 
 	return result;
 }
+
+void Board::mousePressEvent(sf::Event event, sf::Vector2f &lastClickedPiece, sf::Vector2f &hoveredTile, sf::RenderWindow& window, sf::Cursor& cursor, sf::Vector2f& lastClickedPosition, sf::Vector2f& shaderMousePos) {
+	// Check if left click
+	if (event.mouseButton.button == sf::Mouse::Left) {
+		// Store the board square pointer
+		_Piece<Board>* clickedPiece = this->getPiece(hoveredTile);
+
+		if (clickedPiece != nullptr) {
+// START OF DEBUG PRINT STUFF
+			// sf::Vector2f hoveredTileDebug = hoveredTile;
+			// hoveredTileDebug.y += 1;
+			// _Piece<Board>* clickedPieceDebug = board.getPiece(hoveredTileDebug);
+			// std::cout << "KQBNRF"[clickedPieceDebug->getType()] << std::endl;
+			std::cout << clickedPiece->getValidSquares(this).size() << " available spaces to move to" << std::endl;
+// END OF DEBUG PRINT STUFF
+
+			lastClickedPiece = hoveredTile;
+
+			// Set the cursor to drag around the piece
+			if (cursor.loadFromSystem(sf::Cursor::SizeAll))
+				window.setMouseCursor(cursor);
+
+			// Set the last clicked position to the mouse position
+			lastClickedPosition = shaderMousePos;//sf::Vector2f(mousePos.x / window.getSize().x, mousePos.y / window.getSize().y);
+			this->pieceShader.setUniform("lastClickedPos", lastClickedPosition);
+
+			this->slideSound.play();
+		}
+
+		
+	}
+}
+
+void Board::mouseReleaseEvent(sf::Event event, sf::Vector2f& hoveredTile, sf::Vector2f& lastClickedPiece) {
+	// Check if left release
+	if (event.mouseButton.button == sf::Mouse::Left) {
+		_Piece<Board>* oldPiece = this->getPiece(lastClickedPiece);
+		_Piece<Board>* newPiece = this->getPiece(hoveredTile);
+
+		// Get the valid squares for the held piece
+		bool movingToValid = false;
+		if (oldPiece != nullptr) {
+			std::vector<sf::Vector2i> validSquares = oldPiece->getValidSquares(this);
+			
+			// Loop through all valid positions, check if they equal the hovered position
+			for (sf::Vector2i validPos : validSquares) {
+				if (validPos.x == (int)hoveredTile.x && validPos.y == (int)hoveredTile.y)
+					movingToValid = true;
+			}
+		}
+
+		if (lastClickedPiece.x >= 0 && (newPiece == nullptr || newPiece->isPieceWhite() != oldPiece->isPieceWhite()) && movingToValid) {
+
+			//gameMovementsLog += '/';
+			
+			// Print piece letter
+			//gameMovementsLog += "KQBNRF"[oldPiece->getType()];
+			// Print location
+			// Rank
+			//gameMovementsLog += "abcdefgh"[(int)(lastClickedPiece.x)];
+			// Row
+			//gameMovementsLog += std::to_string(8 - (int)(lastClickedPiece.y));
+
+			if (newPiece != nullptr) {
+				// Takes pleace, play sound
+				this->takeSound.play();
+
+				// if took, print
+				//gameMovementsLog += 'x';
+			}
+
+			
+			this->setPiece(hoveredTile, oldPiece);
+
+			// Clear the reference to this piece from the old position
+			this->setPiece(lastClickedPiece, nullptr);
+
+			// Print location
+			// Rank
+			//gameMovementsLog += "abcdefgh"[(int)(hoveredTile.x+0.2)];
+			// Row
+			//gameMovementsLog += std::to_string(8 - (int)(hoveredTile.y+0.2));
+
+			//std::cout << gameMovementsLog << std::endl;
+
+		}
+
+		// Reset, no longer holding piece
+		lastClickedPiece = sf::Vector2f(-1, -1);
+		this->pieceShader.setUniform("lastClickedPos", lastClickedPiece);
+
+		this->slideSound.stop();
+	}
+}

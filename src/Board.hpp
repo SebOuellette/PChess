@@ -78,6 +78,10 @@ public:
 	sf::Vector2f mapShaderCoord(sf::Vector2f);
 	sf::Vector2f mapWindowPixelToBoard(sf::Vector2f);
 
+	// Event Functions
+	void mousePressEvent(sf::Event event, sf::Vector2f &lastClickedPiece, sf::Vector2f &hoveredTile, sf::RenderWindow& window, sf::Cursor& cursor, sf::Vector2f& lastClickedPosition, sf::Vector2f& shaderMousePos);
+	void mouseReleaseEvent(sf::Event event, sf::Vector2f& hoveredTile, sf::Vector2f& lastClickedPiece);
+
 
 	void doFrame(
 		sf::RenderWindow* window,
