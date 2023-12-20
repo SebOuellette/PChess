@@ -5,11 +5,11 @@ SOURCE_DIR := src
 LIBRARIES_DIR := libraries
 LIBRARIES_LIB := lib
 LIBRARIES_INCLUDE := include
-
+#-Wl,-rpath,"$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_LIB))" -L$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_LIB))  
 
 CURRENT_DIR := $(shell pwd)
-LINK_OPTIONS := -Wl,-rpath,"$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_LIB))" -L$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_LIB)) -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
-COMPILE_OPTS := -I$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_INCLUDE)) -g 
+LINK_OPTIONS := -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system  
+COMPILE_OPTS := #-I$(wildcard $(CURRENT_DIR)/$(LIBRARIES_DIR)/*/$(LIBRARIES_INCLUDE)) -g 
 
 SOURCE_FILES := $(wildcard $(SOURCE_DIR)/*.cpp)
 OBJECT_FILES := $(patsubst $(SOURCE_DIR)/%.cpp,%.o,$(SOURCE_FILES))

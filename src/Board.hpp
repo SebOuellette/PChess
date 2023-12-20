@@ -1,5 +1,6 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
+#include <SFML/System/Vector2.hpp>
 #include <iostream>
 #include <cmath>
 #include <SFML/Graphics.hpp>
@@ -43,6 +44,10 @@ private:
 	sf::SoundBuffer slideBuffer;
 	sf::SoundBuffer takeBuffer;
 
+	// TODO
+	sf::Vector2i position; // Position (in pixels) where the board is on the window  (mousepos must be adjusted for this offset)
+	sf::Vector2i size; // Size of the board
+
 	void genPieces();
 public:
 	sf::Shader pieceShader;
@@ -63,6 +68,16 @@ public:
 	_Piece<Board>* getPiece(sf::Vector2f pos);
 	void setPiece(int x, int y, _Piece<Board>* newPiece);
 	void setPiece(sf::Vector2f pos, _Piece<Board>* newPiece);
+	sf::Vector2f getPosition();
+	void setPosition(sf::Vector2f newPos);
+	sf::Vector2i getSize();
+	void setSize(sf::Vector2i newSize);
+
+	// Used for mapping cursor pos to the board's coordinate system
+	//  Board system is translated by position, then the Y axis is flipped across the center of the board. 
+	sf::Vector2f mapShaderCoord(sf::Vector2f);
+	sf::Vector2f mapWindowPixelToBoard(sf::Vector2f);
+
 
 	void doFrame(
 		sf::RenderWindow* window,
@@ -73,6 +88,7 @@ public:
 		sf::Vector2f mousePos,
 		float framerate
 	);
+
 };
 
 #endif 

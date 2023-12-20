@@ -9,11 +9,12 @@ int main() {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window(sf::VideoMode(600, 600), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
 	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
 
 	const short int tileSize = 600 / 8;
 	Board board(tileSize, &window);
+	board.setPosition(sf::Vector2f(100, 100));
 	sf::Cursor cursor;
 
 	// The location of the last clicked piece
@@ -41,8 +42,8 @@ int main() {
 		sf::Vector2f mouseVelocity = mousePos; // Cache the old mousePosition
 
 		// Get the mouse position
-		mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		sf::Glsl::Vec2 shaderMousePos = sf::Glsl::Vec2(mousePos.x, window.getSize().y - mousePos.y);
+		mousePos = board.mapWindowPixelToBoard(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+		sf::Glsl::Vec2 shaderMousePos = sf::Glsl::Vec2(board.mapShaderCoord(mousePos));//sf::Glsl::Vec2(mousePos.x, window.getSize().y - mousePos.y);
 
 		// Finish the calculation
 		mouseVelocity = mousePos - mouseVelocity; // new Mouse pos - old mouse pos = vector from old mouse pos to new mouse pos
@@ -50,15 +51,19 @@ int main() {
 		board.pieceShader.setUniform("mousePos", shaderMousePos);
 
 		// Get the current hovered tile
-		sf::Vector2f hoveredTile = sf::Vector2f(mousePos.x / tileSize, mousePos.y / tileSize);
+		sf::Vector2f hoveredTile = sf::Vector2f(floor(mousePos.x / tileSize), floor(mousePos.y / tileSize));
 
 		// If I'm holding a piece, set the hovered tile to the center of the chess piece instead of the mouse
-		if (lastClickedPiece.x >= 0) {
-			// Move the selected position to the center of the held piece
-			hoveredTile -= sf::Vector2f(
-				std::fmod(lastClickedPosition.x * 8, 1.0) - 0.5, 
-				std::fmod(lastClickedPosition.y * 8, 1.0) - 0.5);
-		}
+		// if (lastClickedPiece.x >= 0) {
+		// 	// Move the selected position to the center of the held piece
+		// 	hoveredTile -= sf::Vector2f(
+		// 		std::fmod(lastClickedPosition.x * 8, 1.0) - 0.5, 
+		// 		std::fmod(lastClickedPosition.y * 8, 1.0) - 0.5);
+		// }
+
+		//std::cout << hoveredTile.x << " " << hoveredTile.y << std::endl;;
+
+		std::cout << (shaderMousePos.x - lastClickedPosition.x) * 2 / board.getSize().x / 0.25 << " " << (shaderMousePos.y - lastClickedPosition.y) * 2 / board.getSize().y  / 0.25 << std::endl;
 
 		
 
@@ -91,8 +96,8 @@ int main() {
 								window.setMouseCursor(cursor);
 
 							// Set the last clicked position to the mouse position
-							lastClickedPosition = sf::Vector2f(mousePos.x / window.getSize().x, mousePos.y / window.getSize().y);
-							board.pieceShader.setUniform("lastClickedPos", shaderMousePos);
+							lastClickedPosition = shaderMousePos;//sf::Vector2f(mousePos.x / window.getSize().x, mousePos.y / window.getSize().y);
+							board.pieceShader.setUniform("lastClickedPos", lastClickedPosition);
 
 							board.slideSound.play();
 						}
@@ -169,6 +174,8 @@ int main() {
 		
 		// Let the board do it's calculations for the frame
 		window.clear();
+
+		std::cout << lastClickedPosition.x / tileSize << " " << lastClickedPosition.y / tileSize << " | " << shaderMousePos.x / tileSize << " " << shaderMousePos.y / tileSize << std::endl; 
 		
 		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		

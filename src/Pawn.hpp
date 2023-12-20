@@ -10,7 +10,7 @@
 template <typename T>
 class _Pawn : public _Piece<T> {
 public:
-	_Pawn(bool colour, const short int* tileSize, short int startx, short int starty) : _Piece<T>(colour, PAWN, tileSize, startx, starty) {
+	_Pawn(bool colour, const short int* tileSize, sf::Vector2f boardPos, short int startx, short int starty) : _Piece<T>(colour, PAWN, tileSize, boardPos, startx, starty) {
 		
 	}
 

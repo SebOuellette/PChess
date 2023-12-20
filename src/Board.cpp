@@ -3,8 +3,12 @@
 
 
 Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
+
+	// Set the size of the board
+	this->setSize(sf::Vector2i(tileSize * 8, tileSize * 8));
+
 	// Generate a texture
-	if (!this->backgroundTexture.create(600,600)) {
+	if (!this->backgroundTexture.create(this->getSize().x, this->getSize().y)) {
 		std::cout << "Error generating background texture" << std::endl;
 	}
 
@@ -53,7 +57,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 		// Draw the item that we are holding
 		"vec2 localLastClicked = fract(lastClickedPos / resolution * 8.);"
 		"if (isHolding) {"
-			"gl_Position.xy += mousePos / resolution * 2. - position * unit - localLastClicked * unit;"
+			"gl_Position.xy += (mousePos - lastClickedPos) * 2. / resolution;" // mousePos / resolution * 2. - position * unit - localLastClicked * unit;"
 		"}"
 
 		// If we are holding some item but this is not the item we are holding
@@ -96,7 +100,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 		exit(1);
 	}
 
-	this->pieceShader.setUniform("resolution", sf::Glsl::Vec2(window->getSize()));
+	this->pieceShader.setUniform("resolution", sf::Glsl::Vec2(this->getSize()));
 	this->pieceShader.setUniform("texture", sf::Shader::CurrentTexture);
 
 	// Generate a texture
@@ -142,7 +146,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 	this->pieceOffsetShader.setUniform("texture", sf::Shader::CurrentTexture);
 	this->pieceOffsetShader.setUniform("texResolution", sf::Glsl::Vec2(pieceOffsetTexture.getSize()));
-	this->pieceOffsetShader.setUniform("windowResolution", sf::Glsl::Vec2(window->getSize()));
+	this->pieceOffsetShader.setUniform("windowResolution", sf::Glsl::Vec2(this->getSize()));
 	
 
 	// Loading sounds
@@ -176,12 +180,14 @@ sf::Sprite * Board::getBackground() {
 }
 
 void Board::genPieces() {
+	sf::Vector2f boardPos = this->getPosition();
+
 	for (int colour=0;colour<=1;colour++) {
 		int y = colour ? 6 : 1;
 
 		// Generate pawns
 		for (int x=0;x<8;x++) {
-			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize, x, y);
+			this->pieces[x][y] = new _Pawn<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 		
 		// Set the y variable to work for the back rank pieces
@@ -189,31 +195,31 @@ void Board::genPieces() {
 
 		// Generate Rooks
 		for (int x=0;x<8;x+=7) {
-			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize, x, y);
+			this->pieces[x][y] = new _Rook<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Knights
 		for (int x=1;x<8;x+=5) {
-			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize, x, y);
+			this->pieces[x][y] = new _Knight<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Bishops
 		for (int x=2;x<8;x+=3) {
-			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize, x, y);
+			this->pieces[x][y] = new _Bishop<Board>(colour, &this->tileSize, boardPos, x, y);
 		}
 
 		// Generate Queens
-		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize, 3, y);
+		this->pieces[3][y] = new _Queen<Board>(colour, &this->tileSize, boardPos, 3, y);
 
 		// Generate King
-		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize, 4, y);
+		this->pieces[4][y] = new _King<Board>(colour, &this->tileSize, boardPos, 4, y);
 	}
 }
 
 void Board::drawPieces(sf::RenderWindow *window, _Piece<Board>* holdingPiece) {
 	// Get the current mouse position, in the coordinate space of a vertex shader
-	sf::Glsl::Vec2 mousePos = sf::Glsl::Vec2(window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
-	mousePos.y = window->getSize().y-mousePos.y;
+	//sf::Glsl::Vec2 mousePos = sf::Glsl::Vec2(window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
+	//mousePos.y = this->getSize().y - mousePos.y - this->getBackground()->getPosition().y;
 
 	auto drawPiece = [&](_Piece<Board>* piece, int x, int y, bool isHolding) {
 		this->pieceShader.setUniform("isWhite", piece->isPieceWhite());
@@ -313,4 +319,57 @@ void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf:
 	}
 
 	
+}
+
+// Retrieve the position of the board, storedi nthe position of the sprite texture
+sf::Vector2f Board::getPosition() {
+	return this->getBackground()->getPosition();
+}
+
+// Move the board to a new position
+void Board::setPosition(sf::Vector2f newPos) {
+	this->getBackground()->setPosition(newPos);
+
+	// Update the pieces
+	for (int i=0;i<sizeof(this->pieces)/sizeof(unsigned long /* Piece* */);i++) {
+		
+		int x = i % 8;
+		int y = i / 8;
+
+		_Piece<Board>* piece = this->getPiece(x, y);
+
+		if (piece != nullptr) {
+			piece->updateBoardPos(newPos);
+		}
+	}
+}
+
+
+sf::Vector2i Board::getSize() {
+	return this->size;
+}
+
+void Board::setSize(sf::Vector2i newSize) {
+	this->size = newSize;
+}
+
+sf::Vector2f Board::mapShaderCoord(sf::Vector2f windowPos) {
+	sf::Vector2f result = windowPos;
+
+	// Translate
+	//result -= this->getPosition();
+
+	// Flip
+	result.y = this->getSize().y - windowPos.y;
+
+	return result;
+}
+
+sf::Vector2f Board::mapWindowPixelToBoard(sf::Vector2f windowPos) {
+	sf::Vector2f result = windowPos;
+
+	// Translate
+	result -= this->getPosition();
+
+	return result;
 }

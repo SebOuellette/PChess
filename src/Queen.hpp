@@ -7,7 +7,7 @@
 template <typename T>
 class _Queen : public _Piece<T> {
 public:
-	_Queen(bool colour, const short int* tileSize, short int startx, short int starty) : _Piece<T>(colour, QUEEN, tileSize, startx, starty) {
+	_Queen(bool colour, const short int* tileSize, sf::Vector2f boardPos, short int startx, short int starty) : _Piece<T>(colour, QUEEN, tileSize, boardPos, startx, starty) {
 		
 	}
 	

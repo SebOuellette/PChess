@@ -27,9 +27,10 @@ private:
 	PieceID pieceID;
 	sf::Texture texture;
 	sf::Sprite sprite;
+	sf::Vector2f _boardPos;
 
 	void setPositionBackend(int x, int y) {
-		this->sprite.setPosition(sf::Vector2f(*this->tileSize * x, *this->tileSize * y));
+		this->sprite.setPosition(sf::Vector2f(*this->tileSize * x, *this->tileSize * y) + this->_boardPos);
 		this->pos[0] = x;
 		this->pos[1] = y;
 	}
@@ -38,7 +39,10 @@ protected:
 	short int pos[2] = {0, 0};
 
 public:
-	_Piece(bool isWhite, PieceID pieceID, const short int * tileSize, short int startx = 0, short int starty = 0) : tileSize(tileSize) {
+	_Piece(bool isWhite, PieceID pieceID, const short int * tileSize, sf::Vector2f boardPos, short int startx = 0, short int starty = 0) : tileSize(tileSize) {
+		// First, store the board pos so the next function call will have access to it
+		this->_boardPos = boardPos;
+
 		setPositionBackend(startx, starty);
 
 		this->isWhite = isWhite;
@@ -108,6 +112,13 @@ public:
 
 	bool isPieceWhite() {
 		return this->isWhite;
+	}
+
+	void updateBoardPos(sf::Vector2f newBoardPos) {
+		this->_boardPos = newBoardPos;
+
+		// Update the piece's position
+		setPositionBackend(this->pos[0], this->pos[1]);
 	}
 
 	virtual std::vector<sf::Vector2i> getValidSquares(T * board) {
