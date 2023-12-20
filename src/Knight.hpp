@@ -40,6 +40,8 @@ public:
 			}
 		}
 
+		// TODO: Castle Squares
+
 		return validSquares;
 	}
 };

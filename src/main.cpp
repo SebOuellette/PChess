@@ -7,7 +7,7 @@
 
 int main() {
 	sf::ContextSettings settings;
-	settings.antialiasingLevel = 8;
+	settings.antialiasingLevel = 0; // 8 (set to 0 for now cause why)
 
 	sf::RenderWindow window(sf::VideoMode(900, 800), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
 	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
@@ -43,6 +43,23 @@ int main() {
 
 		// Get the mouse position
 		mousePos = board.mapWindowPixelToBoard(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+
+		// Constrain the mouse pos to the board
+		auto constrain = [](int n, int s){
+			int r = n;
+
+			if (r < 0)
+				r = 0;
+
+			if (r >= s)
+				r = s - 1;
+
+			return r;
+		};
+
+		mousePos.x = constrain(mousePos.x, board.getSize().x);
+		mousePos.y = constrain(mousePos.y, board.getSize().y);
+
 		sf::Glsl::Vec2 shaderMousePos = sf::Glsl::Vec2(board.mapShaderCoord(mousePos));//sf::Glsl::Vec2(mousePos.x, window.getSize().y - mousePos.y);
 
 		// Finish the calculation
