@@ -61,7 +61,7 @@ Board::Board(short int tileSize, sf::Window* window) : tileSize(tileSize) {
 
 		// If we are holding some item but this is not the item we are holding
 		"if (lastClickedPos.x >= 0. && !isHolding) {"
-			"gl_Position.xy += (texture2D(pieceOffset, position / 8.).xy - 0.5) / 10.;"
+			"gl_Position.xy += (texture2D(pieceOffset, position / 8.).xy - 0.5) / (10.0 / resolution.x * resolution.x);"
 		"}"
 		
 		"gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;"
@@ -277,7 +277,7 @@ void Board::doFrame(sf::RenderWindow* window, sf::Vector2f lastClickedPiece, sf:
 	// First play sounds
 	// If we are holding a piece, do audio stuff
 	if (lastClickedPiece.x >= 0) {
-		this->slideSound.setVolume(100);
+		this->slideSound.setVolume(50);
 
 		this->slideSound.setPitch(this->slideSound.getPitch() + (speed*framerate/AUDIO_SLIDE_PITCH - this->slideSound.getPitch()) / (framerate/30.f));
 	}

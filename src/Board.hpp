@@ -14,7 +14,7 @@
 #include "Queen.hpp"
 #include "King.hpp"
 
-#define AUDIO_SLIDE_PITCH 200.f
+#define AUDIO_SLIDE_PITCH 400.f
 
 // class Board;
 

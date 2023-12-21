@@ -4,25 +4,29 @@
 #include <cmath>
 #include <cstddef>
 #include <string>
-#include "UI.hpp"
+#include "UI_Module.hpp"
+#include "Textbox.hpp"
+
+#define BOARD_SIZE 400 // px
+#define MAX_FRAMERATE 512
+#define WINDOW_TITLE "Perky Chess"
 
 int main() {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 0; // 8 (set to 0 for now cause why)
 
-	sf::RenderWindow window(sf::VideoMode(900, 800), "Perky Chess", sf::Style::Titlebar | sf::Style::Close, settings);
-	window.setFramerateLimit(512); // Set to 512 because it works best for the dragging audio
+	sf::RenderWindow window(sf::VideoMode(1000, 800), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize, settings);
+	window.setFramerateLimit(MAX_FRAMERATE); // Set to 512 because it works best for the dragging audio
 
-	const short int tileSize = 600 / 8;
+	const short int tileSize = BOARD_SIZE / 8;
 	Board board(tileSize, &window);
-	board.setPosition(sf::Vector2f(100, 100));
+	board.setPosition(sf::Vector2f((window.getSize().x - BOARD_SIZE) / 2, 50));
 	sf::Cursor cursor;
 
 	// The location of the last clicked piece
 	sf::Vector2f lastClickedPiece = sf::Vector2f(-1, -1);
 	sf::Vector2f lastClickedPosition = sf::Vector2f(-1, -1);
 
-	
 	// Keep a copy of the previous mouse position to calculate the instantaneous velocity during the current frame
 	sf::Vector2f boardMousePos;
 	sf::Vector2f mousePos;
@@ -33,7 +37,12 @@ int main() {
 
 	// UI Test
 	UI_Module uitest(sf::Vector2f(200, 200), sf::Vector2f(750, 150));
+	sf::Font** f = uitest.loadFont("./fonts/coolvetica.ttf");
 	uitest.updateCanvas();
+	// Child UI test
+	Textbox test2(sf::Vector2f(300, 300), sf::Vector2f(100, 100));
+	test2.loadFont(f);
+	test2.updateCanvas();
 
 	while (window.isOpen()) {
 		
@@ -92,6 +101,15 @@ int main() {
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			switch (event.type) {
+				case sf::Event::Resized:
+					{
+						sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+						window.setView(sf::View(visibleArea));
+
+						board.setPosition(sf::Vector2f((window.getSize().x - BOARD_SIZE) / 2, 50));
+					}
+
+					break;
 				case sf::Event::Closed:
 					window.close();
 					break;
@@ -108,6 +126,7 @@ int main() {
 			} 
 		}
 		
+		
 		// Let the board do it's calculations for the frame
 		window.clear( sf::Color(46, 38, 31, 255));
 		
@@ -116,6 +135,7 @@ int main() {
 		window.draw(*board.getBackground());
 		board.drawPieces(&window, board.getPiece(lastClickedPiece));
 		window.draw(uitest.drawable());
+		window.draw(test2.drawable());
 		window.display();
 	}
 	return 0;
