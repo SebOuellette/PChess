@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <string>
+#include "UI.hpp"
 
 int main() {
 	sf::ContextSettings settings;
@@ -28,8 +29,11 @@ int main() {
 
 	// Create a clock for calculating the framerate
 	sf::Clock FrameClock;
-
 	std::string gameMovementsLog = "";
+
+	// UI Test
+	UI_Module uitest(sf::Vector2f(200, 200), sf::Vector2f(750, 150));
+	uitest.updateCanvas();
 
 	while (window.isOpen()) {
 		
@@ -105,12 +109,13 @@ int main() {
 		}
 		
 		// Let the board do it's calculations for the frame
-		window.clear(sf::Color(0, 0, 0, 255));
+		window.clear( sf::Color(46, 38, 31, 255));
 		
 		board.doFrame(&window, lastClickedPiece, mouseVelocity, hoveredTile, &cursor, shaderMousePos, framerate);
 		
 		window.draw(*board.getBackground());
 		board.drawPieces(&window, board.getPiece(lastClickedPiece));
+		window.draw(uitest.drawable());
 		window.display();
 	}
 	return 0;
